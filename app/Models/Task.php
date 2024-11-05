@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Http\Request;
 
 class Task extends Model
 {
@@ -13,21 +15,35 @@ class Task extends Model
         'title',
         'description',
         'completed',
-        'due_date',    // New column
-        'priority',    // New column
+        'due_date',
+        'priority',
+        'notes',
+        'user_id',
     ];
 
-
-    // You can add any additional methods here
-    public function markAsCompleted()
+    public function search(Request $request)
     {
-        $this->completed = true;
-        $this->save();
+        $tasks = self::query()
+            ->when(
+                $request->search,
+                function (Builder $builder) use ($request) {
+                    $builder->where('title', 'like', "%{$request->search}%");
+                }
+            )->get();
+
+        return view('tasks.index', compact('tasks'));
     }
 
-    public function markAsPending()
+    public function filter(Request $request)
     {
-        $this->completed = false;
-        $this->save();
+        $filterText = $request->query('filter');
+        $tasks = self::where('priority', 'like', '%' . $filterText . '%')->get();
+
+        return view('tasks.index', compact('tasks'));
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 }
