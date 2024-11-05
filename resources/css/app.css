@@ -1,3 +1,91 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+body {
+    background-color: lightgrey;
+    font-family: Arial, sans-serif;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+
+}
+
+.account-menu,
+.search-form,
+.task-form,
+.task-list {
+    width: 100%;
+    max-width: 600px; /* Limiting max width for better readability */
+    margin-bottom: 20px;
+    padding: 1rem;
+    background: white;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+input[type="text"],
+input[type="date"],
+textarea {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px; /* Increased margin for more space */
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+button {
+    padding: 10px 15px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 10px; /* Add space above buttons */
+}
+
+button.bg-blue {
+    background-color: #007bff;
+    color: white;
+}
+
+button.bg-red {
+    background-color: #dc3545;
+    color: white;
+}
+
+button.bg-green {
+    background-color: #28a745;
+    color: white;
+}
+
+button.bg-yellow {
+    background-color: #ffc107;
+    color: white;
+}
+
+button.bg-gray {
+    background-color: #6c757d;
+    color: white;
+}
+
+.task-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    margin-bottom: 10px;
+}
+
+.task-details {
+    flex: 1;
+}
+
+.task-actions {
+    display: flex;
+    gap: 10px; /* Spacing between action buttons */
+}
