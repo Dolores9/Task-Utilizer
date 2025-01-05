@@ -11,6 +11,8 @@ class Task extends Model
 {
     use HasFactory;
 
+
+
     protected $fillable = [
         'title',
         'description',
@@ -21,26 +23,6 @@ class Task extends Model
         'user_id',
     ];
 
-    public function search(Request $request)
-    {
-        $tasks = self::query()
-            ->when(
-                $request->search,
-                function (Builder $builder) use ($request) {
-                    $builder->where('title', 'like', "%{$request->search}%");
-                }
-            )->get();
-
-        return view('tasks.index', compact('tasks'));
-    }
-
-    public function filter(Request $request)
-    {
-        $filterText = $request->query('filter');
-        $tasks = self::where('priority', 'like', '%' . $filterText . '%')->get();
-
-        return view('tasks.index', compact('tasks'));
-    }
 
     public function user()
     {
