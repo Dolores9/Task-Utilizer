@@ -7,11 +7,23 @@
     <div class="account-menu">
         @auth
             <p>Welcome, <strong>{{ Auth::user()->name }}</strong>!</p>
+
+            {{-- Check if the user is an admin --}}
             @if(Auth::user()->admin)
                 <form action="{{ route('admin.dashboard') }}" method="GET" style="display: inline;">
-                    <button type="submit" class="bg-blue">Admin Dashboard</button>
+                    <button type="submit" class="button">Admin Dashboard</button>
                 </form>
             @endif
+
+            <form action="{{ route('notes.index') }}" method="GET" style="display: inline;">
+                <button type="submit" class="button">View Notes</button>
+            </form>
+
+            <form action="{{ route('profile.edit') }}" method="GET" style="display: inline;">
+                <button type="submit" class="button">Profile</button>
+            </form>
+
+
             <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: inline;">
                 @csrf
                 <button type="submit" class="bg-red">Logout</button>
@@ -23,14 +35,22 @@
 
     <!-- Search Form -->
     <div class="search-form">
-        <form action="{{ route('dashboard') }}" method="GET">
-            <input type="text" name="search" placeholder="Search tasks..." value="{{ request('search') }}">
-            <button type="submit" class="bg-gray">Search</button>
+        <form action="{{ route('tasks.search') }}" method="GET" style="display: flex; align-items: center;">
+            <input type="text" name="search" placeholder="Search tasks..." value="{{ request('search') }}" style="margin-right: 10px;">
+            <select name="priority" style="margin-right: 10px;">
+                <option value="">All Priorities</option>
+                <option value="1" {{ request('priority') == '1' ? 'selected' : '' }}>High</option>
+                <option value="0" {{ request('priority') == '0' ? 'selected' : '' }}>Low</option>
+            </select>
+            <button type="submit" class="button">Search</button>
+        </form>
+        <form action="{{ route('tasks.index') }}" method="GET" style="display: inline;">
+            <button type="submit" class="button">Reset</button>
         </form>
     </div>
 
     <!-- Add Task Form -->
-    <div class="container" style="background-color: #f5f5f5; padding: 20px;">
+    <div class="container-task-form" style="background-color: #f5f5f5; padding: 20px;">
         <h1>Add a Task</h1>
 
         <!-- Display validation errors -->
@@ -45,7 +65,7 @@
         @endif
 
         <!-- Task form -->
-        <form action="{{ route('dashboard') }}" method="POST">
+        <form action="{{ route('tasks.store') }}" method="POST">
             @csrf
             <div style="margin-bottom: 10px;">
                 <label for="title">Title</label>
@@ -72,26 +92,22 @@
         </form>
     </div>
 
-
     <!-- List of tasks -->
     <div class="task-list">
         @foreach($tasks as $task)
             <div class="task-item">
-                    <strong>{{ $task->title }}</strong>
-                    <p>{{ $task->description }}</p>
-                    <p>Priority: {{ $task->priority ? 'Yes' : 'No' }}</p>
-                    <p>Due Date: {{ $task->due_date }}</p>
-                    @if ($showNotesField)
-                        <input type="text" name="notes[{{ $task->id }}]" placeholder="Add notes for this task">
-                    @endif
+                <strong>{{ $task->title }}</strong>
+                <p>{{ $task->description }}</p>
+                <p>Priority: {{ $task->priority ? 'Yes' : 'No' }}</p>
+                <p>Due Date: {{ $task->due_date }}</p>
                 <div class="task-actions">
                     <form action="/tasks/{{ $task->id }}/edit" method="GET">
-                        <button type="submit" class="bg-blue">Edit</button>
+                        <button type="submit" class="button">Edit</button>
                     </form>
                     <form action="/tasks/{{ $task->id }}" method="POST">
                         @csrf
                         @method('DELETE')
-                        <button type="submit" class="bg-yellow">Complete</button>
+                        <button type="submit" class="button">Complete</button>
                     </form>
                 </div>
             </div>
