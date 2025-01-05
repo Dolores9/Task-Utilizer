@@ -11,19 +11,9 @@ class TaskController extends Controller
     {
         $user = auth()->user();
 
-        // Fetch tasks for the current user
         $tasks = Task::where('user_id', $user->id)->get();
 
-        // Ensure that you can access completed_tasks
-        if (property_exists($user, 'completed_tasks')) {
-            $showNotesField = $user->completed_tasks >= 5;
-        } else {
-            $showNotesField = false; // Default to false if the property doesn't exist
-        }
-
-
-
-        return view('tasks.index', compact('tasks', 'showNotesField'));
+        return view('tasks.index', compact('tasks'));
 
     }
 
@@ -48,8 +38,14 @@ class TaskController extends Controller
         return redirect('tasks')->with('success', 'Task created successfully.');
     }
 
-    public function destroy(Task $task)
+    public function destroy(Task $task, Id $id)
     {
+        $task = Task::find($id);
+
+        if ($task->user_id !== auth()->id()) {
+            abort(403, 'Unauthorized action.');
+        }
+
         $task->increment('completed_count');
 
         if ($task->completed_count === 1) {
@@ -61,18 +57,65 @@ class TaskController extends Controller
         return redirect('tasks')->with('success', 'Task deleted successfully.');
     }
 
+    public function edit($id)
+    {
+        $task = Task::find($id);
+
+        if ($task->user_id !== auth()->id()) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        return view('tasks.edit', compact('task'));
+    }
+
+
     public function update(Request $request, Task $task)
     {
-        $request->validate([
-            'notes' => 'nullable|string',
+           $request->validate([
+            'title' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'priority' => 'required|boolean',
+            'due_date' => 'required|date',
         ]);
 
-        $task->update([
-            'notes' => $request->notes,
-        ]);
+        $task = Task::find($request->id);
 
-        return redirect()->route('tasks')->with('success', 'Task updated successfully!');
+        if ($task->user_id !== auth()->id()) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $task->title = $request->input('title');
+        $task->description = $request->input('description');
+        $task->priority = $request->input('priority');
+        $task->due_date = $request->input('due_date');
+
+        $task->save();
+
+        // Redirect back to tasks page with success message
+        return redirect()->route('tasks.index')->with('success', 'Task updated successfully.');
     }
+
+    public function search(Request $request)
+    {
+        $search = $request->input('search');
+        $filter = $request->input('priority');
+
+        $query = Task::query();
+
+        if (!empty($search)) {
+            $query->where('title', 'like', "%$search%");
+        }
+
+        if (!is_null($filter)) {
+            $query->where('priority', $filter);
+        }
+
+        $tasks = $query->get();
+
+        return view('tasks.index', ['tasks' => $tasks]);
+    }
+
+
 
 
 
