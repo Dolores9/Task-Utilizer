@@ -35,13 +35,12 @@ class AuthenticatedSessionController extends Controller
         $user = Auth::getProvider()->retrieveByCredentials($credentials);
 
         if ($user && !$user->active) {
-            return redirect()->route('not-active'); // Redirect to not-active route if the user is inactive
+            return redirect()->route('not-active');
         }
 
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
 
-            $user = Auth::user(); // Get the authenticated user
             $user->updated_at = now();
             $user->save();
 
@@ -51,10 +50,11 @@ class AuthenticatedSessionController extends Controller
                 'updated_at' => now(),
             ]);
 
-            return redirect()->intended('/tasks'); // Redirect to the intended tasks route
+
+            return redirect(route('tasks.index'));
         }
 
-        return redirect()->route('login'); // Redirect back to the login page if login fails
+        return redirect(route('not-active'));
     }
 
     /**

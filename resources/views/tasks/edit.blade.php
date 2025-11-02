@@ -3,10 +3,11 @@
 @section('content')
     <div class="task-form-container">
         <h2>Edit your Task</h2>
-        <form action="{{ route('tasks.update', $task )}}" method="POST">
+        <form action="{{ route('tasks.update', $task->id )}}" method="POST">
             @csrf
             @method('PUT')
 
+            <input type="hidden" id="id" value="{{ $task->id }}"/>
             <div class="form-group">
                 <label for="task-title" class="form-label">Title</label>
                 <input
@@ -32,7 +33,7 @@
 
             <div class="text-center">
                 <button type="submit" class="task-submit-btn">Edit Task</button>
-                <a href="{{ route('tasks.index') }}" class="btn btn-secondary">Cancel</a>
+                <a href="{{ route('tasks.index') }}" class="button">Cancel</a>
             </div>
         </form>
     </div>

@@ -74,7 +74,7 @@
 
             <div style="margin-bottom: 10px;">
                 <label for="description">Description</label>
-                <textarea name="description" id="description">{{ old('description') }}</textarea>
+                <input type="text" name="description" id="description" value="{{ old('description') }}" required style="padding: 0 20px 20px 0">
             </div>
 
             <div style="margin-bottom: 10px;">

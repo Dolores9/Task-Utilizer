@@ -10,16 +10,13 @@ use Illuminate\Support\Facades\Auth;
 
 class NoteController extends Controller
 {
-    public function index()
-    {
-        $notes = Note::all();
+    public function index() {
+        $notes = Note::where('user_id', Auth::id())->get();
         return view('notes.index', compact('notes'));
     }
 
-    public function create()
-    {
+    public function create() {
         $loginCount = LoginLog::where('user_id', Auth::id())->count();
-
 
         if ($loginCount < 5) {
             return redirect()->route('notes.index')
@@ -29,8 +26,7 @@ class NoteController extends Controller
         return view('notes.create');
     }
 
-    public function store(Request $request)
-    {
+    public function store(Request $request) {
         // Validate the input
         $request->validate([
             'title' => 'required|string|max:255',
@@ -39,7 +35,7 @@ class NoteController extends Controller
 
         // Create the note
         Note::create([
-            'user_id' => Auth::id(), // Associate note with logged-in user
+            'user_id' => Auth::id(),
             'title' => $request->input('title'),
             'description' => $request->input('description'),
         ]);
@@ -48,12 +44,14 @@ class NoteController extends Controller
         return redirect()->route('notes.index')->with('success', 'Note created successfully!');
     }
 
-    public function destroy(Note $note)
-    {
-        // Delete the note
+    public function destroy(Note $note) {
+        if ($note->user_id !== Auth::id()) {
+            return redirect()->route('notes.index')
+                ->withErrors('Je bent niet bevoegd om deze notitie te verwijderen.');
+        }
+
         $note->delete();
 
-        // Redirect back to the notes index with a success message
         return redirect()->route('notes.index')->with('success', 'Note deleted successfully!');
     }
 

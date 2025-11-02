@@ -16,7 +16,7 @@
 
         <div class="notes-menu">
         <a href="{{ route('notes.create') }}" class="button">Create Note</a>
-        <a href="{{ route('tasks.index') }}" class="button">Go Back</a
+        <a href="{{ route('tasks.index') }}" class="button">Go Back</a>
         </div>
 
             @foreach($notes as $note)
